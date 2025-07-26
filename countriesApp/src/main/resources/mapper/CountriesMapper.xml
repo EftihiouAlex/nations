@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nations.dao.CountriesMapper">
+    <select id="fetchCountries" resultType="com.nations.model.Countries">
+        SELECT country_id as countryId, name, area, country_code2 as countryCode2, country_code3 as countryCode3 FROM countries ORDER BY name
+    </select>
+
+    <select id="findCountryStats" resultType="com.nations.dto.CountriesStatsDTO">
+        SELECT
+        ct.name AS continentName,
+        rg.name AS regionName,
+        co.name AS countryName,
+        co.country_id as countryId,
+        cs.year,
+        cs.population,
+        cs.gdp
+        FROM country_stats cs
+        INNER JOIN countries co ON cs.country_id = co.country_id
+        INNER JOIN regions rg ON co.region_id = rg.region_id
+        INNER JOIN continents ct ON rg.continent_id = ct.continent_id
+        ORDER BY  cs.year;
+    </select>
+
+    <select id="findCountryPaginatedStats" resultType="com.nations.dto.CountriesStatsDTO" parameterType="map">
+        SELECT
+        ct.name AS continentName,
+        rg.name AS regionName,
+        co.name AS countryName,
+        co.country_id as countryId,
+        cs.year,
+        cs.population,
+        cs.gdp
+        FROM country_stats cs
+        INNER JOIN countries co ON cs.country_id = co.country_id
+        INNER JOIN regions rg ON co.region_id = rg.region_id
+        INNER JOIN continents ct ON rg.continent_id = ct.continent_id
+        ORDER BY cs.year
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+
+    <select id="getFilteredStats" parameterType="int" resultType="com.nations.dto.CountriesStatsDTO">
+        SELECT
+        ct.name AS continentName,
+        rg.name AS regionName,
+        co.name AS countryName,
+        co.country_id as countryId,
+        cs.year,
+        cs.population,
+        cs.gdp
+        FROM country_stats cs
+        INNER JOIN countries co ON cs.country_id = co.country_id
+        INNER JOIN regions rg ON co.region_id = rg.region_id
+        INNER JOIN continents ct ON rg.continent_id = ct.continent_id
+        WHERE cs.year >= #{yearFrom} AND cs.year &lt; #{yearTo}
+        ORDER BY ct.name, rg.name, co.name, cs.year;
+    </select>
+</mapper>

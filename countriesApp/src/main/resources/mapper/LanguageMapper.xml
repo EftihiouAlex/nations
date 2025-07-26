@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nations.dao.LanguagesMapper">
+    <select id="findSpokenLanguages" parameterType="long" resultType="com.nations.dto.LanguagesDTO">
+        SELECT l.language_id AS languageId,
+        l.language AS language,
+        cl.official AS official,
+        co.name AS countryName
+        FROM languages l
+        INNER JOIN country_languages cl ON l.language_id = cl.language_id
+        INNER JOIN countries co ON cl.country_id = co.country_id
+        WHERE cl.country_id = #{id}
+        ORDER BY cl.official DESC;
+    </select>
+</mapper>
